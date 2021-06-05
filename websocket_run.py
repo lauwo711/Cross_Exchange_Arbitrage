@@ -75,52 +75,52 @@ def cross_ex_arbitrage():
     global re_fee
     
     threading.Timer(0.1, cross_ex_arbitrage).start() # run every 0.1sec
-    
-    try:
-        re_best_ask=json.loads(re_ws_resp)['asks'][0][0]
-        re_best_bid=json.loads(re_ws_resp)['bids'][0][0]
+    while True:
+        try:
+            re_best_ask=json.loads(re_ws_resp)['asks'][0][0]
+            re_best_bid=json.loads(re_ws_resp)['bids'][0][0]
 
-        bn_best_ask=json.loads(bn_ws_resp)['a']
-        bn_best_bid=json.loads(bn_ws_resp)['b']
+            bn_best_ask=json.loads(bn_ws_resp)['a']
+            bn_best_bid=json.loads(bn_ws_resp)['b']
 
-        px_re   = round((float(re_best_bid) + float(re_best_ask))*0.5,rnd)
-        px_bn   = round((float(bn_best_bid) + float(bn_best_ask))*0.5,rnd)
-        
-        pnl_trd = 0
-        
-        if threshold > px_bn/px_re: #px_re > px_bn:
-            
-            #craete buy order at biance
-            #create sell order at another exchange
-            
-            #record
-            bn_quo_bal  += qty*(1-bn_fee)
-            bn_base_bal -= px_bn*qty
-            re_quo_bal  -= qty*(1-bn_fee)
-            re_base_bal += px_re*qty*threshold
-            pnl_trd      = px_re*qty*threshold - px_bn*qty
-            
-            pnl += pnl_trd
-            logger.info("%s %s %s %s %s %s %s %s",pnl_trd, pnl, bn_base_bal, bn_quo_bal, re_base_bal, re_quo_bal, px_bn, px_re)
-                
-        elif threshold > px_re/px_bn: #px_re < px_bn:
-            
-            #craete sell order at biance
-            #create buy order at another exchange
-            
-            re_quo_bal  += qty*(1-re_fee)
-            re_base_bal -= px_re*qty
-            bn_quo_bal  -= qty*(1-re_fee)
-            bn_base_bal += px_bn*qty*threshold
-            pnl_trd      = px_bn*qty*threshold - px_re*qty
-            
-            pnl += pnl_trd
-            logger.info("%s %s %s %s %s %s %s %s",pnl_trd, pnl, bn_base_bal, bn_quo_bal, re_base_bal, re_quo_bal, px_bn, px_re)
+            px_re   = round((float(re_best_bid) + float(re_best_ask))*0.5,rnd)
+            px_bn   = round((float(bn_best_bid) + float(bn_best_ask))*0.5,rnd)
 
-        print(pnl_trd, px_bn, px_re)
+            pnl_trd = 0
 
-    except:
-        traceback.print_exc()
+            if threshold > px_bn/px_re: #px_re > px_bn:
+
+                #craete buy order at biance
+                #create sell order at another exchange
+
+                #record
+                bn_quo_bal  += qty*(1-bn_fee)
+                bn_base_bal -= px_bn*qty
+                re_quo_bal  -= qty*(1-bn_fee)
+                re_base_bal += px_re*qty*threshold
+                pnl_trd      = px_re*qty*threshold - px_bn*qty
+
+                pnl += pnl_trd
+                logger.info("%s %s %s %s %s %s %s %s",pnl_trd, pnl, bn_base_bal, bn_quo_bal, re_base_bal, re_quo_bal, px_bn, px_re)
+
+            elif threshold > px_re/px_bn: #px_re < px_bn:
+
+                #craete sell order at biance
+                #create buy order at another exchange
+
+                re_quo_bal  += qty*(1-re_fee)
+                re_base_bal -= px_re*qty
+                bn_quo_bal  -= qty*(1-re_fee)
+                bn_base_bal += px_bn*qty*threshold
+                pnl_trd      = px_bn*qty*threshold - px_re*qty
+
+                pnl += pnl_trd
+                logger.info("%s %s %s %s %s %s %s %s",pnl_trd, pnl, bn_base_bal, bn_quo_bal, re_base_bal, re_quo_bal, px_bn, px_re)
+
+            print(pnl_trd, px_bn, px_re)
+
+        except:
+            traceback.print_exc()
         
 if __name__ == "__main__":
     try:

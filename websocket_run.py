@@ -74,7 +74,7 @@ def cross_ex_arbitrage():
     global bn_fee
     global re_fee
     
-    threading.Timer(0.1, test).start() # run every 0.1sec
+    threading.Timer(0.1, cross_ex_arbitrage).start() # run every 0.1sec
     
     try:
         re_best_ask=json.loads(re_ws_resp)['asks'][0][0]
